@@ -1,7 +1,7 @@
-target/
-*.class
-.settings/
-.classpath
-.project
-.factorypath
-*.log
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+/logs/
+.DS_Store
+.idea/
+.vscode/
+*.iml
