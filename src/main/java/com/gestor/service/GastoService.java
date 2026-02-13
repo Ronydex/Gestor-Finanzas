@@ -24,7 +24,7 @@ public class GastoService {
 				saldo += g.getMonto();
 				}else {
 					saldo -= g.getMonto();
-					} 
+					}
 			}
 			return saldo;
 		}
