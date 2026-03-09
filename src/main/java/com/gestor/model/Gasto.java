@@ -15,17 +15,21 @@ public class Gasto {
 	private String descripcion;
 	private Double monto;
 	private LocalDate fecha;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "usuario_id")
+	private Usuario usuario;
+
 	public Gasto(String descripcion, Double monto, LocalDate fecha, TipoTransaccion tipo){
 		this.descripcion = descripcion;
 		this.monto = monto;
 		this.fecha = fecha;
 		this.tipo = tipo;
 		}
-		
+
 	public Gasto(){
 		}
-		
+
 	public Long getId(){ return id; }
 	public void setId(Long id){ this.id = id;}
 	
@@ -40,7 +44,9 @@ public class Gasto {
 	
 	public TipoTransaccion getTipo() { return tipo; }
 	public void setTipo( TipoTransaccion tipo) { this.tipo = tipo; }
-		
+
+	public Usuario getUsuario() { return usuario; }
+	public void setUsuario(Usuario usuario){ this.usuario = usuario;}
 
 	}
 

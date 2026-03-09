@@ -15,17 +15,17 @@ public class GastoService {
 	private GastoRepository gastoRepo;
 	
 	//Logica para calcular el saldo total
-	public Double calcularSaldoTotal(){
-		List<Gasto> todos = gastoRepo.findAll();
-		Double saldo = 0.0;
-		
-		for (Gasto g: todos) {
-			if (g.getTipo() == TipoTransaccion.INGRESO) {
-				saldo += g.getMonto();
-				}else {
-					saldo -= g.getMonto();
-					}
-			}
-			return saldo;
+	public Double calcularSaldoTotalPorUsuario(String email){
+		List<Gasto> gastosUsuario = gastoRepo.findByUsuarioEmail(email);
+		double ingresos = gastosUsuario.stream()
+				.filter(g->g.getTipo().name().equals("INGRESO"))
+				.mapToDouble(Gasto::getMonto)
+				.sum();
+
+		double egresos = gastosUsuario.stream()
+				.filter(g->g.getTipo().name().equals("EGRESO"))
+				.mapToDouble(Gasto::getMonto)
+				.sum();
+			return ingresos-egresos;
 		}
 	}
