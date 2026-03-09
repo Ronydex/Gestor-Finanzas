@@ -1,0 +1,61 @@
+			/* 1. Ajuste al contenedor principal para que todo esté a la derecha */
+			.header-container {
+			display: flex;
+			justify-content: flex-end; /* Empuja todo el contenido a la derecha */
+			padding: 15px 25px;
+			background-color: #f8f9fa;
+			margin-bottom: 20px;
+			border-bottom: 1px solid #ddd;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Un toque de sombra para que se vea Pro */
+		}
+
+			/* 2. El nuevo "wrapper" que alinea la foto y el botón */
+			.user-nav-wrapper {
+			display: flex;
+			align-items: center; /* Alinea verticalmente al centro la foto y el botón */
+			gap: 15px; /* Crea una separación de 15px entre la foto y el botón */
+		}
+
+		/* 3. Estilos para la info del usuario (ya los tenías, solo verifícalos) */
+		.user-profile {
+			display: flex;
+			align-items: center;
+			gap: 10px; /* Separación entre la imagen circular y el nombre */
+		}
+
+		.profile-img {
+			width: 100px;
+			height: 100px;
+			border-radius: 60%; /* Foto circular */
+			object-fit: cover;
+			border: 2px solid #fff; /* Un borde blanco */
+			box-shadow: 0 0 5px rgba(0,0,0,0.1); /* Sombra suave en la foto */
+			display: block;
+		}
+
+		.user-name {
+			font-weight: 600; /* Un poco más de grosor a la fuente */
+			color: #495057;
+			font-size: 15px;
+		}
+
+		/* 4. Estilos para el botón de logout (ya los tenías) */
+		.btn-logout {
+			background-color: #dc3545;
+			color: white;
+			border: none;
+			padding: 8px 18px;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 14px;
+			font-weight: 500;
+			transition: all 0.3s ease;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.btn-logout:hover {
+			background-color: #a71d2a;
+			transform: translateY(-2px); /* Un pequeño salto al pasar el mouse */
+		}

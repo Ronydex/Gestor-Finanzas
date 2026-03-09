@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Perfil - Gestor Finanzas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/estilos.css}" rel="stylesheet">
+</head>
+<body class="container mt-5">
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h3 class="mb-0">Mi Perfil</h3>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/perfil/actualizar}" method="POST" enctype="multipart/form-data">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre Completo</label>
+                        <input type="text" name="nombre" class="form-control"
+                               th:value="${usuario?.nombre}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Subir Foto de Perfil</label>
+                        <input type="file" name="archivoFoto" class="form-control" accept="image/*">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <a th:href="@{/ver-todo}" class="btn btn-outline-secondary">Volver al Dashboard</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    // 1. Escuchamos cuando cambies el archivo en el input
+    document.querySelector('input[name="archivoFoto"]').addEventListener('change', function(e) {
+        const reader = new FileReader();
+
+        // 2. Cuando el archivo se lea, lo ponemos en la imagen de arriba
+        reader.onload = function(e) {
+            document.querySelector('.rounded-circle').src = e.target.result;
+        }
+
+        // 3. Leemos el archivo seleccionado
+        if(this.files[0]) {
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+</script>
