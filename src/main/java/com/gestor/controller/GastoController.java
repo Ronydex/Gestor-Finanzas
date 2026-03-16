@@ -9,12 +9,10 @@ import com.gestor.service.GastoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
@@ -24,21 +22,6 @@ import java.util.stream.Collectors;
 
 @Controller
 public class GastoController {
-	/*
-	@PostMapping("/gastos/nuevo-form")
-	public String crearGastoForm(
-			@RequestParam String descripcion,
-			@RequestParam Double monto,
-			@RequestParam String tipo){
-				
-		TipoTransaccion tipoEnum = TipoTransaccion.valueOf(tipo.toUpperCase());
-		Gasto nuevoGasto = new Gasto(descripcion, monto, LocalDate.now(), tipoEnum);
-		gastoRepo.save(nuevoGasto);
-		
-		return "redirect:/ver-todo"; //Esto hace que la página se refresque sola
-				
-	}
-	*/
 
 	
 	@Autowired
@@ -50,23 +33,35 @@ public class GastoController {
 	@Autowired
 	private UsuarioRepository usuarioRepo;
 
+
 	@PostMapping("/gastos/nuevo-form")
-	public String crearGastoForm(@RequestParam String descripcion,
-								 @RequestParam Double monto,
-								 @RequestParam String tipo,
-								 Principal principal) { // Agregamos Principal
+	public String crearGastoForm(@Valid @ModelAttribute("gasto") Gasto gasto,
+								 BindingResult result,
+								 Principal principal,
+								 Model model) {
+		if (result.hasErrors()) {
+			String email = principal.getName();
 
-		TipoTransaccion tipoEnum = TipoTransaccion.valueOf(tipo.toUpperCase());
+			model.addAttribute("gasto", new Gasto());
+			model.addAttribute("usuario", usuarioRepo.findByEmail(email).orElseThrow());
+			model.addAttribute("gastos", gastoRepo.findByUsuarioEmail(email));
+			model.addAttribute("saldo", gastoService.calcularSaldoTotalPorUsuario(email));
 
-		// 1. Buscamos al usuario real que está logueado
-		Usuario usuarioActual = usuarioRepo.findByEmail(principal.getName())
-				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+			List<Gasto> lista = gastoRepo.findByUsuarioEmail(email);
+			model.addAttribute("descripciones", lista.stream().map(Gasto::getDescripcion).toList());
+			model.addAttribute("montos" , lista.stream().map(Gasto::getMonto).toList());
+			model.addAttribute("tipos", lista.stream().map(Gasto::getTipo).toList());
 
-		// 2. Creamos el gasto asignándole ese usuario
-		Gasto nuevoGasto = new Gasto(descripcion, monto, LocalDate.now(), tipoEnum);
-		nuevoGasto.setUsuario(usuarioActual); // <--- ESTO ES LO QUE FALTA
+			return "listado";
+		}
 
-		gastoRepo.save(nuevoGasto);
+
+		//Al estar todo bien,se guarda:
+		Usuario usuarioActual = usuarioRepo.findByEmail(principal.getName()).orElseThrow();
+		gasto.setUsuario(usuarioActual);
+		gasto.setFecha(LocalDate.now());
+
+		gastoRepo.save(gasto);
 		return "redirect:/ver-todo";
 	}
 
@@ -111,6 +106,7 @@ public class GastoController {
 		model.addAttribute("descripciones", descripciones);
 		model.addAttribute("montos", montos);
 		model.addAttribute("tipos", tipos);
+		model.addAttribute("gasto", new Gasto());
 		
 		return "listado";//Busca el archivo templates/listado.html
 		}
@@ -135,7 +131,7 @@ public class GastoController {
 		return gastoRepo.findAll();
 		}
 	
-	//Ruta rápida para agregar un gasto desde la URL (solo para probar por el momento)
+	//Ruta rápida para agregar un gasto desde la URL
 	
 	@GetMapping("/gastos/nuevo")
 	@ResponseBody
@@ -150,11 +146,11 @@ public class GastoController {
 		
 		return "Gasto guardado: " + descripcion + " por $" + monto;
 		}
-		
+
 	@GetMapping("/gastos/eliminar/{id}")
-	public String eliminarGasto(@PathVariable Long id){
+	public String eliminar(@PathVariable Long id) {
 		gastoRepo.deleteById(id);
-		return "redirect:/ver-todo"; //Regresa a la tabla para ver el cambio
-		}
+		return "redirect:/ver-todo";
+	}
 
 	}

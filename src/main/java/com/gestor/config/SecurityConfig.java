@@ -36,10 +36,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringAntMatchers("/h2-console/**"))
+                .csrf(csrf -> csrf.disable())
             .authorizeRequests()
                 .antMatchers("/login","/registro","/css/**","/jss/**").permitAll()
                 .antMatchers("/gastos/**").authenticated()
+                .antMatchers("/imagenes/**").permitAll()
                 .anyRequest().authenticated()
             .and()
             .formLogin()
@@ -50,6 +51,7 @@ public class SecurityConfig {
             .and()
             .logout()
                 .permitAll();
+
 
         
         return http.build();

@@ -17,6 +17,13 @@
                 <form th:action="@{/perfil/actualizar}" method="POST" enctype="multipart/form-data">
 
                     <div class="mb-3">
+                        <div class="mb-2">
+                            <img th:src="${usuario?.fotoUrl ?: 'https://via.placeholder.com/150'}"
+                                 alt="Perfil"
+                                 class="rounded-circle border"
+                                 style="width: 100px; height: 100px; object-fit: cover;">
+                        </div>
+
                         <label class="form-label">Nombre Completo</label>
                         <input type="text" name="nombre" class="form-control"
                                th:value="${usuario?.nombre}" required>

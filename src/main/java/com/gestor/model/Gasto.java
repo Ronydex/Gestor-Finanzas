@@ -1,6 +1,7 @@
 package com.gestor.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Entity
@@ -11,9 +12,17 @@ public class Gasto {
 	private Long id;
 	@Enumerated(EnumType.STRING)
 	private TipoTransaccion tipo;
-	
+
+	@NotBlank(message= "La descripción no puede estar vacía")
+	@Size(min= 3, max= 50, message="La descripción debe tener entre 3 y 50 carácteres")
 	private String descripcion;
+
+	@NotNull(message= "El monto es obligatorio")
+	@Positive(message= "El monto debe ser un número positivo")
 	private Double monto;
+
+	@NotNull(message= "La fecha es obligatoria")
+	@PastOrPresent(message="La fecha no debe ser futura")
 	private LocalDate fecha;
 
 	@ManyToOne
