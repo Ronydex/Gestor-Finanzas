@@ -21,7 +21,6 @@ public class Gasto {
 	@Positive(message= "El monto debe ser un número positivo")
 	private Double monto;
 
-	@NotNull(message= "La fecha es obligatoria")
 	@PastOrPresent(message="La fecha no debe ser futura")
 	private LocalDate fecha;
 

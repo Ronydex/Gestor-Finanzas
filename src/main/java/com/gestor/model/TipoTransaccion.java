@@ -4,5 +4,6 @@ package com.gestor.model;
 //También se evitan errores de escritura en el código,además de que sirve como forma de tener una lista "cerrada" de opciones,sin afectar a las propias transacciones
 public enum TipoTransaccion {
 	INGRESO,
-	EGRESO
+	EGRESO,
+	GASTO
 	}

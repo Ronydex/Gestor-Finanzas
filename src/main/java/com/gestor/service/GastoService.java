@@ -6,6 +6,7 @@ import com.gestor.repository.GastoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.stream.Stream;
 import java.util.List;
 
 @Service
@@ -18,13 +19,13 @@ public class GastoService {
 	public Double calcularSaldoTotalPorUsuario(String email){
 		List<Gasto> gastosUsuario = gastoRepo.findByUsuarioEmail(email);
 		double ingresos = gastosUsuario.stream()
-				.filter(g->g.getTipo().name().equals("INGRESO"))
-				.mapToDouble(Gasto::getMonto)
+				.filter(g->g.getTipo() == TipoTransaccion.INGRESO)
+				.mapToDouble(g -> g.getMonto() != null ? g.getMonto() : 0.0)
 				.sum();
 
 		double egresos = gastosUsuario.stream()
-				.filter(g->g.getTipo().name().equals("EGRESO"))
-				.mapToDouble(Gasto::getMonto)
+				.filter(g->g.getTipo() == TipoTransaccion.GASTO || g.getTipo() == TipoTransaccion.EGRESO)
+				.mapToDouble(g -> g.getMonto() != null ? g.getMonto() : 0.0)
 				.sum();
 			return ingresos-egresos;
 		}

@@ -42,7 +42,6 @@ public class GastoController {
 		if (result.hasErrors()) {
 			String email = principal.getName();
 
-			model.addAttribute("gasto", new Gasto());
 			model.addAttribute("usuario", usuarioRepo.findByEmail(email).orElseThrow());
 			model.addAttribute("gastos", gastoRepo.findByUsuarioEmail(email));
 			model.addAttribute("saldo", gastoService.calcularSaldoTotalPorUsuario(email));
