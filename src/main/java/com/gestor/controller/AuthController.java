@@ -25,6 +25,7 @@ public class AuthController {
         return "redirect:/login";
     }
 
+    //Estos dos metodos son necesarios para el correcto registro de un usuario
     @GetMapping("/registro")
     public String mostrarFormularioRegistro(Model model){
         model.addAttribute("usuario", new Usuario());
