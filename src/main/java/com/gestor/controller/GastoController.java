@@ -42,10 +42,10 @@ public class GastoController {
 			String email = principal.getName();
 
 			model.addAttribute("usuario", usuarioRepo.findByEmail(email).orElseThrow());
-			model.addAttribute("gastos", gastoRepo.findByUsuarioEmail(email));
+			model.addAttribute("gastos", gastoRepo.buscarGastosPorEmailUsuario(email));
 			model.addAttribute("saldo", gastoService.calcularSaldoTotalPorUsuario(email));
 
-			List<Gasto> lista = gastoRepo.findByUsuarioEmail(email);
+			List<Gasto> lista = gastoRepo.buscarGastosPorEmailUsuario(email);
 			model.addAttribute("descripciones", lista.stream().map(Gasto::getDescripcion).toList());
 			model.addAttribute("montos" , lista.stream().map(Gasto::getMonto).toList());
 			model.addAttribute("tipos", lista.stream().map(Gasto::getTipo).toList());
@@ -81,7 +81,7 @@ public class GastoController {
 		Usuario usuario = usuarioRepo.findByEmail(emailUsuario)
 				.orElseThrow(() ->new RuntimeException("No se encontro al usuario"));
 
-		List<Gasto> lista = gastoRepo.findByUsuarioEmail(emailUsuario);
+		List<Gasto> lista = gastoRepo.buscarGastosPorEmailUsuario(emailUsuario);
 
 		Double saldo = gastoService.calcularSaldoTotalPorUsuario(emailUsuario);
 

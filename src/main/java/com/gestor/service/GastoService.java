@@ -17,7 +17,7 @@ public class GastoService {
 	
 	//Logica para calcular el saldo total
 	public Double calcularSaldoTotalPorUsuario(String email){
-		List<Gasto> gastosUsuario = gastoRepo.findByUsuarioEmail(email);
+		List<Gasto> gastosUsuario = gastoRepo.buscarGastosPorEmailUsuario(email);
 		double ingresos = gastosUsuario.stream()
 				.filter(g->g.getTipo() == TipoTransaccion.INGRESO)
 				.mapToDouble(g -> g.getMonto() != null ? g.getMonto() : 0.0)

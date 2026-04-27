@@ -24,6 +24,8 @@ public class Gasto {
 	@PastOrPresent(message="La fecha no debe ser futura")
 	private LocalDate fecha;
 
+    
+
 	@ManyToOne
 	@JoinColumn(name = "usuario_id")
 	private Usuario usuario;

@@ -13,29 +13,37 @@ import java.util.ArrayList;
 @Service
 public class UsuarioService implements UserDetailsService {
 
-    private  final UsuarioRepository usuarioRepository;
+    private  final UsuarioRepository usuarioRepo;
     private final BCryptPasswordEncoder passwordEncoder;
 
     private final String UPLOAD_DIR = "/home/ronydex/Proyectos/GestorFinanzas/uploads/";
 
-    public UsuarioService(UsuarioRepository usuarioRepository, BCryptPasswordEncoder passwordEncoder){
-        this.usuarioRepository = usuarioRepository;
+
+//Sirve para inyectar las dependencias correspondientes
+    public UsuarioService(UsuarioRepository usuarioRepo, BCryptPasswordEncoder passwordEncoder){
+        this.usuarioRepo = usuarioRepo;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public UserDetails loadUserByUsername (String email) throws UsernameNotFoundException {
         //Buscar al usuario por email del repositorio  que esta alojado en la DB.
-        Usuario usuario = usuarioRepository.findByEmail(email)
+        Usuario usuario = usuarioRepo.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
 
         //Retornamos un objeto de Spring Security con los datos de la tabla:
         return new User(usuario.getEmail(), usuario.getPassword(), new ArrayList<>());
     }
 
+    public Usuario  buscarPorEmail(String email) {
+        Usuario usuario = usuarioRepo.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuario No Encontrado/No Valido"));
+            return usuario;
+    }
+
     public void guardar(Usuario usuario){
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        usuarioRepository.save(usuario);
+        usuarioRepo.save(usuario);
     }
 
     public void actualizarPerfil(Usuario usuario, org.springframework.web.multipart.MultipartFile imagen) throws java.io.IOException {
@@ -47,6 +55,6 @@ public class UsuarioService implements UserDetailsService {
 
             usuario.setFotoUrl("/imagenes/" + nombreImagen);
         }
-        usuarioRepository.save(usuario);
+        usuarioRepo.save(usuario);
     }
 }

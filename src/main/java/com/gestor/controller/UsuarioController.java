@@ -1,7 +1,6 @@
 package com.gestor.controller;
 
 import com.gestor.model.Usuario;
-import com.gestor.repository.UsuarioRepository;
 import com.gestor.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,35 +21,30 @@ import java.security.Principal;
 @Controller
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioRepository usuarioRepo;
 
     @Autowired
     private com.gestor.service.UsuarioService usuarioService;
 
     @GetMapping("/perfil")
     public String verPerfil(Model model, Principal principal) {
-        Usuario usuario = usuarioRepo.findByEmail(principal.getName())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = usuarioService.buscarPorEmail(principal.getName());
         model.addAttribute("usuario", usuario);
         return "perfil";
     }
+
+    
 
     @PostMapping("/perfil/actualizar")
     public String actualizarPerfil(@RequestParam String nombre,
                                    @RequestParam("archivoFoto")MultipartFile archivo,
                                    Principal principal) throws IOException {
-        Usuario usuario = usuarioRepo.findByEmail(principal.getName())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = usuarioService.buscarPorEmail(principal.getName());
 
-        //Actualizamos los datos
         usuario.setNombre(nombre);
 
         usuarioService.actualizarPerfil(usuario, archivo);
 
-        usuarioRepo.save(usuario); // Guarda en MYSQL
         return "redirect:/ver-todo?exito=perfilActualizado";
     }
-
 
 }
