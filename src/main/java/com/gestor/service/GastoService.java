@@ -3,12 +3,15 @@ package com.gestor.service;
 import com.gestor.dto.GastoDTO;
 import com.gestor.model.Gasto;
 import com.gestor.model.TipoTransaccion;
+import com.gestor.model.CategoriaKakeibo;
 import com.gestor.model.Usuario;
 import com.gestor.repository.GastoRepository;
 import com.gestor.repository.UsuarioRepository; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.TemporalAdjusters;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,6 +25,46 @@ public class GastoService {
     @Autowired
     private UsuarioRepository usuarioRepo;
     
+    public List<Gasto>  filtrarPorPeriodo(String email, String periodo){
+        //1.Obtenemos todos los gastos del usuario desde el repositorio
+        List<Gasto> listaCompleta = gastoRepo.buscarGastosPorEmailUsuario(email);
+
+        //2.Obtenemos la fecha actual del sistema
+        LocalDate hoy = LocalDate.now();
+
+        //3.Iniciamos el procesamiento con Streams
+       return listaCompleta.stream()
+            .filter(g -> {
+                if(g.getFecha() == null) return false;
+
+                switch(periodo.toLowerCase()) {
+                  case "dia":
+                  //Compara si la fecha del gasto es exactamente hoy
+                  return g.getFecha().isEqual(hoy);
+
+                  case "semana":
+                  //Calculamos el inicio de la semana(Lunes)
+                  LocalDate inicioSemana= hoy.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
+                  //Verificamos si el gasto ocurrio desde el lunes hasta hoy
+                  return !g.getFecha().isBefore(inicioSemana) && !g.getFecha().isAfter(hoy);
+
+                  case "mes":
+                  //Compara que el mes y el año coincida con los actuales
+                  return g.getFecha().getMonth() == hoy.getMonth() && g.getFecha().getYear() == hoy.getYear();
+
+                  case "anio":
+                  //Filtra solo por el año actual
+                  return g.getFecha().getYear() == hoy.getYear();
+
+                  default:
+                    // Si no se especifica  o es "todos" , devuelve la lista completa
+                    return true;
+
+
+                }
+            })
+            .collect(Collectors.toList());
+    }
     
     public void guardarGasto(GastoDTO dto, String email) {
         // Buscamos al usuario por su email
@@ -33,6 +76,7 @@ public class GastoService {
         gasto.setDescripcion(dto.getDescripcion());
         gasto.setMonto(dto.getMonto());
         gasto.setTipo(dto.getTipo());
+        gasto.setCategoria(dto.getCategoria());
         
         // La fecha se asigna automáticamente (Lógica de negocio)
         gasto.setFecha(LocalDate.now());
@@ -62,7 +106,7 @@ public class GastoService {
     }
 
     // 3. Obtener datos para el Dashboard (Gráficas)
-    public Map<String, Object> obtenerDatosDashboard(String email){
+    public Map<String, Object> obtenerDatosDashboard(String email,String periodo){
         Usuario usuario = usuarioRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("No se encontró al usuario"));
 

@@ -1,6 +1,7 @@
 package com.gestor.dto;
 
 import com.gestor.model.TipoTransaccion;
+import com.gestor.model.CategoriaKakeibo;
 import javax.validation.constraints.*;
 
 public class GastoDTO{
@@ -15,6 +16,8 @@ public class GastoDTO{
     @NotNull(message="Debes seleccionar un tipo")
     private TipoTransaccion tipo;
 
+    @NotNull(message="Debes tener un tipo de estos")
+    private CategoriaKakeibo categoria;
 
     //Getters y Setters
     public String getDescripcion() { return descripcion; }
@@ -24,6 +27,9 @@ public class GastoDTO{
     public void setMonto(Double monto){this.monto = monto;}
 
     public TipoTransaccion getTipo() { return tipo; }
-    public void setTransaccion(TipoTransaccion Tipo) {this.tipo = tipo;}
+    public void setTransaccion(TipoTransaccion tipo) {this.tipo = tipo;}
+
+    public CategoriaKakeibo getCategoria() { return categoria; }
+    public void setCategoria(CategoriaKakeibo categoria) {this.categoria = categoria;}
 
 }

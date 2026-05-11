@@ -24,7 +24,8 @@ public class Gasto {
 	@PastOrPresent(message="La fecha no debe ser futura")
 	private LocalDate fecha;
 
-    
+    @Enumerated(EnumType.STRING)
+    private CategoriaKakeibo categoria; //CATEGORIAS:SUPERVIVENCIA,CULTURA,OCIO Y EXTRAS
 
 	@ManyToOne
 	@JoinColumn(name = "usuario_id")
@@ -54,6 +55,9 @@ public class Gasto {
 	
 	public TipoTransaccion getTipo() { return tipo; }
 	public void setTipo( TipoTransaccion tipo) { this.tipo = tipo; }
+
+    public CategoriaKakeibo getCategoria() { return categoria; }
+    public void setCategoria( CategoriaKakeibo categoria) { this.categoria = categoria; }
 
 	public Usuario getUsuario() { return usuario; }
 	public void setUsuario(Usuario usuario){ this.usuario = usuario;}

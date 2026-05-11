@@ -35,10 +35,14 @@ public class GastoController {
 
         String email = principal.getName();
 
+         // Ejemplo rápido de cómo usarlo en el Controller
+         List<Gasto> filtrados = gastoService.filtrarPorPeriodo(email, "mes");
+         model.addAttribute("gastos", filtrados);
+
 		if (result.hasErrors()){
             
             //Si hay errores,volvemos a pedir los datos para no romper las graficas
-			model.addAllAttributes(gastoService.obtenerDatosDashboard(email));
+			model.addAllAttributes(gastoService.obtenerDatosDashboard(email,"mes"));
 			return "listado";
 		}
 
@@ -47,18 +51,17 @@ public class GastoController {
 		return "redirect:/ver-todo";
 	}
 
-	
 	@GetMapping("/ver-todo")
 	public String mostrarTabla(Model model, Principal principal) {
+        model.addAttribute("gasto", new GastoDTO());
         String email = principal.getName();
-        Map<String, Object> datos = gastoService.obtenerDatosDashboard(email);
+        Map<String, Object> datos = gastoService.obtenerDatosDashboard(email, "mes");
         model.addAllAttributes(datos);
         return "listado";
 		}
 
 	@GetMapping("/gastos/eliminar/{id}")
 	public String eliminar(@PathVariable Long id) {
-		gastoService.eliminarGasto(id);
 		return "redirect:/ver-todo";
 	}
 
