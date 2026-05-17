@@ -17,7 +17,7 @@ public class GastoDTO{
     private TipoTransaccion tipo;
 
     @NotNull(message="Debes tener un tipo de estos")
-    private CategoriaKakeibo categoria;
+    private String categoria;
 
     //Getters y Setters
     public String getDescripcion() { return descripcion; }
@@ -27,9 +27,9 @@ public class GastoDTO{
     public void setMonto(Double monto){this.monto = monto;}
 
     public TipoTransaccion getTipo() { return tipo; }
-    public void setTransaccion(TipoTransaccion tipo) {this.tipo = tipo;}
+    public void setTipo(TipoTransaccion tipo) {this.tipo = tipo;}
 
-    public CategoriaKakeibo getCategoria() { return categoria; }
-    public void setCategoria(CategoriaKakeibo categoria) {this.categoria = categoria;}
+    public String  getCategoria() { return categoria; }
+    public void setCategoria(String  categoria) {this.categoria = categoria;}
 
 }

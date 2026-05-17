@@ -76,7 +76,11 @@ public class GastoService {
         gasto.setDescripcion(dto.getDescripcion());
         gasto.setMonto(dto.getMonto());
         gasto.setTipo(dto.getTipo());
-        gasto.setCategoria(dto.getCategoria());
+        
+
+        if (dto.getCategoria() != null){
+            gasto.setCategoria(CategoriaKakeibo.valueOf(dto.getCategoria()));
+        }
         
         // La fecha se asigna automáticamente (Lógica de negocio)
         gasto.setFecha(LocalDate.now());
@@ -110,26 +114,27 @@ public class GastoService {
         Usuario usuario = usuarioRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("No se encontró al usuario"));
 
-        List<Gasto> lista = gastoRepo.buscarGastosPorEmailUsuario(email);
+        List<Gasto> listaFiltrada = filtrarPorPeriodo(email,periodo);
+
         Double saldo = calcularSaldoTotalPorUsuario(email);
 
         // Preparamos las listas para Chart.js
-        List<String> descripciones = lista.stream()
+        List<String> descripciones = listaFiltrada.stream()
                 .map(Gasto::getDescripcion)
                 .collect(Collectors.toList());
 
-        List<Double> montos = lista.stream()
+        List<Double> montos = listaFiltrada.stream()
                 .map(Gasto::getMonto)
                 .collect(Collectors.toList());
 
-        List<String> tipos = lista.stream()
+        List<String> tipos = listaFiltrada.stream()
                 .map(g -> g.getTipo().name())
                 .collect(Collectors.toList());
 
         Map<String, Object> datos = new HashMap<>();
         datos.put("usuario", usuario);
         datos.put("saldo", saldo);
-        datos.put("gastos", lista); // Necesario para la tabla
+        datos.put("gastos", listaFiltrada); // Necesario para la tabla
         datos.put("descripciones", descripciones); // Para la gráfica
         datos.put("montos", montos); // Para la gráfica
         datos.put("tipos", tipos); // Para la gráfica
