@@ -1,6 +1,7 @@
 package com.gestor.service;
 
 import com.gestor.dto.GastoDTO;
+import com.gestor.dto.GastoResponseDTO;
 import com.gestor.model.Gasto;
 import com.gestor.model.TipoTransaccion;
 import com.gestor.model.CategoriaKakeibo;
@@ -25,7 +26,7 @@ public class GastoService {
     @Autowired
     private UsuarioRepository usuarioRepo;
     
-    public List<Gasto>  filtrarPorPeriodo(String email, String periodo){
+    public List<GastoResponseDTO>  filtrarPorPeriodo(String email, String periodo){
         //1.Obtenemos todos los gastos del usuario desde el repositorio
         List<Gasto> listaCompleta = gastoRepo.buscarGastosPorEmailUsuario(email);
 
@@ -63,6 +64,7 @@ public class GastoService {
 
                 }
             })
+            .map(this::convertirAConvertirResponseDTO)
             .collect(Collectors.toList());
     }
     
@@ -114,17 +116,17 @@ public class GastoService {
         Usuario usuario = usuarioRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("No se encontró al usuario"));
 
-        List<Gasto> listaFiltrada = filtrarPorPeriodo(email,periodo);
+        List<GastoResponseDTO> listaFiltrada = filtrarPorPeriodo(email,periodo);
 
         Double saldo = calcularSaldoTotalPorUsuario(email);
 
         // Preparamos las listas para Chart.js
         List<String> descripciones = listaFiltrada.stream()
-                .map(Gasto::getDescripcion)
+                .map(GastoResponseDTO::getDescripcion)
                 .collect(Collectors.toList());
 
         List<Double> montos = listaFiltrada.stream()
-                .map(Gasto::getMonto)
+                .map(GastoResponseDTO::getMonto)
                 .collect(Collectors.toList());
 
         List<String> tipos = listaFiltrada.stream()
@@ -144,5 +146,16 @@ public class GastoService {
 
     public void eliminarGasto(Long id) {
         gastoRepo.deleteById(id);
+    }
+
+    public GastoResponseDTO convertirAConvertirResponseDTO(Gasto gasto) {
+        return new GastoResponseDTO(
+            gasto.getId(),
+            gasto.getDescripcion(),
+            gasto.getMonto(),
+            gasto.getTipo(),
+            gasto.getCategoria() != null ? gasto.getCategoria().name() : "SIN CATEGORÍA",
+            gasto.getFecha() !=null ? gasto.getFecha().toString() : ""
+        );
     }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="light">
 <head>
 	<meta charset="UTF-8">
 	<title>Mi Gestor de Finanzas</title>
@@ -9,23 +9,29 @@
 </head>
 <body class="container mt-5">
 
-<div class="header-container">
-	<div class="user-nav-wrapper">
-		<div class="user-profile">
-			<a th:href="@{/perfil}" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-				<img th:src="${usuario?.fotoUrl ?: 'https://via.placeholder.com/40'}" alt="Perfil" class="profile-img">
-				<span th:text="${usuario?.nombre}" class="user-name">Nombre Usuario</span>
-			</a>
-		</div>
-		<form th:action="@{/logout}" method="post" style="display: inline; margin: 0;">
-			<button type="submit" class="btn-logout">
-				<i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+<div class="p-3 mb-4 rounded-3 bg-body-tertiary border text-body d-flex justify-content-between align-items-center shadow-sm">
+
+	<div class="user-profile">
+		<a th:href="@{/perfil}" style="text-decoration: none; display: flex; align-items: center; gap: 10px;" class="text-reset">
+			<img th:src="${usuario?.fotoUrl ?: 'https://via.placeholder.com/40'}" alt="Perfil" class="profile-img rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+			<span th:text="${usuario?.nombre}" class="fw-bold fs-5">Nombre Usuario</span>
+		</a>
+	</div>
+
+	<div class="d-flex align-items-center gap-2">
+		<button class="btn btn-outline-secondary btn-sm" id="btn-theme" type="button">
+			<i class="bi bi-moon-fill" id="theme-icon"></i> ☀️/🌜
+		</button>
+
+		<form th:action="@{/logout}" method="post" style="margin: 0;">
+			<button type="submit" class="btn btn-danger btn-sm">
+				Cerrar Sesión
 			</button>
 		</form>
 	</div>
-</div>
 
-<div class="container-fluid mt-4">
+</div>
+<div class="container-fluid mt-5">
 	<div class="row">
 
 		<div class="col-lg-7">
@@ -35,7 +41,7 @@
 				</div>
 				<div class="card-body">
 					
-					<form th:action="@{/gastos/nuevo-form}" th:object="${gasto}" method="POST" class="row g-2 mb-4 p-3 bg-light border rounded shadow-sm align-items-end">
+					<form th:action="@{/gastos/nuevo-form}" th:object="${gasto}" method="POST" class="p-3 mb-4 rounded-3 bg-body-tertiary border text-body d-flex justify-content-between align-items-center shadow-sm">
 						<div class="col-md-3">
 							<label class="form-label small fw-bold">Descripción</label>
 							<input type="text" th:field="*{descripcion}"
@@ -128,7 +134,7 @@
 
 		<div class="col-lg-5">
 			<div class="card shadow mb-4">
-				<div class="card-header py-3 bg-white">
+				<div class="p-3 mb-4 rounded-3 bg-body-tertiary border text-body d-flex justify-content-between align-items-center shadow-sm">
 					<h6 class="m-0 font-weight-bold text-primary text-center">Distribución de Ingresos y Egresos</h6>
 				</div>
 				<div class="card-body">
@@ -150,7 +156,39 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const htmlElement = document.documentElement;
+    const themeBtn = document.getElementById('btn-theme');
+    const themeIcon = document.getElementById('theme-icon');
 
+    // 1. Leer si el usuario ya tenía un tema guardado en el navegador
+    const temaGuardado = localStorage.getItem('tema') || 'light';
+    htmlElement.setAttribute('data-bs-theme', temaGuardado);
+    actualizarIcono(temaGuardado);
+
+    // 2. Escuchar el click del botón para alternar el tema
+    themeBtn.addEventListener('click', () => {
+        const temaActual = htmlElement.getAttribute('data-bs-theme');
+        const nuevoTema = (temaActual === 'light') ? 'dark' : 'light';
+        
+        // Aplicar el tema al HTML
+        htmlElement.setAttribute('data-bs-theme', nuevoTema);
+        // Guardarlo en el navegador para la próxima visita
+        localStorage.setItem('tema', nuevoTema);
+        
+        actualizarIcono(nuevoTema);
+    });
+
+    // Función helper para cambiar el icono según el modo
+    function actualizarIcono(tema) {
+        if (tema === 'dark') {
+            themeIcon.className = 'bi bi-sun-fill'; // Cambia a icono de sol si usas Bootstrap Icons
+            // Si usas texto o emojis, aquí puedes cambiar el texto del botón
+        } else {
+            themeIcon.className = 'bi bi-moon-fill'; // Cambia a icono de luna
+        }
+    }
+</script>
 <script th:inline="javascript">
 	/*<![CDATA[*/
 		document.addEventListener("DOMContentLoaded", function() {
