@@ -114,7 +114,7 @@ public class GastoService {
     // 3. Obtener datos para el Dashboard (Gráficas)
     public Map<String, Object> obtenerDatosDashboard(String email,String periodo){
         Usuario usuario = usuarioRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("No se encontró al usuario"));
+                .orElseThrow(() -> new ResourceNotFoundException("El Usuario con el correo " + email + "no está registrado en el sistema."));
 
         List<GastoResponseDTO> listaFiltrada = filtrarPorPeriodo(email,periodo);
 
