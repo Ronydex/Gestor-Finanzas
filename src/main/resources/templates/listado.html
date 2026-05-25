@@ -250,6 +250,18 @@
 			}
 		})
 	}
+    // Si Thymeleaf detecta que llegó un mensaje de error desde el ExceptionHandler
+/*<![CDATA[*/
+const errorMensaje = /*[[${errorMensaje}]]*/ null;
+if (errorMensaje) {
+    Swal.fire({
+        icon: 'error',
+        title: '¡Ups!',
+        text: errorMensaje,
+        confirmButtonColor: '#3085d6'
+    });
+}
+/*]]>*/
 </script>
 </body>
 </html>
