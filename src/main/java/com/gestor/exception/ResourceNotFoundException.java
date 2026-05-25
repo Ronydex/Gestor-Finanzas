@@ -1,6 +1,6 @@
 package com.gestor.exception;
 
-public class ResourceNotFoundException extends RunTimeException {
+public class ResourceNotFoundException extends RuntimeException {
     
     public ResourceNotFoundException(String mensaje) {
         super(mensaje);

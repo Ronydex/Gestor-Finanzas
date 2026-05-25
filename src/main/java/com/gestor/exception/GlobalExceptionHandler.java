@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
         //Para errores graves del sistema, podemos mandarlo a una vista dedicada de error
         model.addAttribute("errorCodigo", 500);
         model.addAttribute("errorTitulo", "Error Interno del Servidor");
-        model.addAttribute("errorDetalle","Ocurrió un problema inesperado en el backend: " + ex.getMessageL());
+        model.addAttribute("errorDetalle","Ocurrió un problema inesperado en el backend: " + ex.getMessage());
         return "error"; //Apunta a un archivo error.html que crearemos
     }
 }

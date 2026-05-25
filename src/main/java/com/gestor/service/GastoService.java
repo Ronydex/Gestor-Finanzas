@@ -7,7 +7,8 @@ import com.gestor.model.TipoTransaccion;
 import com.gestor.model.CategoriaKakeibo;
 import com.gestor.model.Usuario;
 import com.gestor.repository.GastoRepository;
-import com.gestor.repository.UsuarioRepository; 
+import com.gestor.repository.UsuarioRepository;
+import com.gestor.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
