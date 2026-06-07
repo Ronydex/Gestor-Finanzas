@@ -6,7 +6,7 @@ import com.gestor.dto.MetaAhorroRequestDTO;
 import com.gestor.model.Usuario;
 import com.gestor.model.MetaAhorro;
 import java.util.Optional;
-import org.springframework.security.core.userdetails.UserNameNotFoundException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 

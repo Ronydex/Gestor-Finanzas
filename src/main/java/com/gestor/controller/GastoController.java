@@ -1,7 +1,10 @@
 package com.gestor.controller;
 
 import com.gestor.dto.GastoDTO;
+import com.gestor.dto.MetaAhorroRequestDTO;
 import com.gestor.model.Gasto;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import com.gestor.service.GastoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -62,8 +65,27 @@ public class GastoController {
         if (!model.containsAttribute("gasto")) {
             model.addAttribute("gasto", new GastoDTO());
         }
+
+        if(!model.containsAttribute("metaAhorro")){
+            model.addAttribute("metaAhorro", new MetaAhorroRequestDTO());
+        }
+
+        //Obtenemos el año y mes actual del sistema
+        YearMonth añoMesActual = YearMonth.now();
+        //Definimos el patron exacto que espera tu DTO y Base de Datos (MM-yyyy)
+        DateTimeFormatter formateador = DateTimeFormatter.ofPattern("MM-yyyy");
+        //Transformamos la fecha actual en el String dinámico 
+        String mesAnioActual = añoMesActual.format(formateador);
+
+        Optional<MetaAhorro> metaOpt = metAhorroService.buscarPorMes(email, mesAnioActual);
+
+        if(metaOpt.isPresent()){
+            model.addAttribute("metaActual", metaOpt.get().getMontoObjetivo());
+        }else {
+            model.addAttribute("metaActual", BigDecimal.ZERO);
+        }
         
-        // 2. Extraemos todos los datos calculados y filtrados para el periodo "mes"
+        // 3. Extraemos todos los datos calculados y filtrados para el periodo "mes"
         Map<String, Object> datos = gastoService.obtenerDatosDashboard(email, "mes");
         model.addAllAttributes(datos);
         

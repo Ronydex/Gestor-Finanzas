@@ -1,7 +1,7 @@
 package com.gestor.dto;
 
 import com.gestor.model.MetaAhorro;
-import javax.validation.constraints;
+import javax.validation.constraints.*;
 
 public class MetaAhorroRequestDTO {
     

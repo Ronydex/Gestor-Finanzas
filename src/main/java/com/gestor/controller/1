@@ -25,19 +25,21 @@ public class MetaAhorroController{
     public String guardarMeta(@Valid @ModelAttribute("metaAhorro") MetaAhorroRequestDTO metAhorroDTO,
                               BindingResult result, Authentication authentication, RedirectAttributes redirectAttributes)
     {
-     
+        if(result.hasErrors()){
+        redirectAttributes.addFlashAttribute("error", "Datos de la meta inválidos");
+        return "redirect:/dashboard";
+        }
 
         if(result.hasErrors()){
         result.getAllErrors().forEach(error -> System.out.println("ERROR DE VALIDACION: " + error.toString()));
 
         redirectAttributes.addFlashAttribute("error", "Datos de la meta inválidos");
-        return "redirect:/metas/ver-todo";
+        return "redirect:/dashboard";
         }
-
         String email = authentication.getName();
         metAhorroService.guardarOActualizarMeta(metAhorroDTO, email);
         redirectAttributes.addFlashAttribute("exito", "Meta de ahorro procesada correctamente");
-        return "redirect:/metas/ver-todo";
+        return "redirect:/dashboard";
 }
 
 }
