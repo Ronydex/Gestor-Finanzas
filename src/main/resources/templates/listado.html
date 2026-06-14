@@ -4,13 +4,14 @@
 	<meta charset="UTF-8">
 	<title>Mi Gestor de Finanzas</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- CDN de Iconos de Bootstrap indispensable para el sol y la luna -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link th:href="@{/css/style.css}" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="container mt-5">
 
 <div class="p-3 mb-4 rounded-3 bg-body-tertiary border text-body d-flex justify-content-between align-items-center shadow-sm">
-
 	<div class="user-profile">
 		<a th:href="@{/perfil}" style="text-decoration: none; display: flex; align-items: center; gap: 10px;" class="text-reset">
 			<img th:src="${usuario?.fotoUrl ?: 'https://via.placeholder.com/40'}" alt="Perfil" class="profile-img rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
@@ -22,18 +23,14 @@
 		<button class="btn btn-outline-secondary btn-sm" id="btn-theme" type="button">
 			<i class="bi bi-moon-fill" id="theme-icon"></i> ☀️/🌜
 		</button>
-
 		<form th:action="@{/logout}" method="post" style="margin: 0;">
-			<button type="submit" class="btn btn-danger btn-sm">
-				Cerrar Sesión
-			</button>
+			<button type="submit" class="btn btn-danger btn-sm">Cerrar Sesión</button>
 		</form>
 	</div>
-
 </div>
+
 <div class="container-fluid mt-5">
 	<div class="row">
-
 		<div class="col-lg-7">
 			<div class="card shadow">
 				<div class="card-header bg-primary text-white">
@@ -41,12 +38,61 @@
 				</div>
 				<div class="card-body">
 					
+					<!-- Kakeibo: Establecer Meta de Ahorro -->
+					<div class="card my-4">
+						<div class="card-header bg-dark text-white">
+							<h5 class="mb-0">Kakeibo: Establecer Meta de Ahorro</h5>
+						</div>
+						<div class="card-body">
+							<div th:if="${exito}" class="alert alert-success" th:text="${exito}"></div>
+							<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+							<form th:action="@{/ver-todo}" th:object="${metaAhorro}" method="post">
+								<div class="row">
+									<div class="col-md-5 mb-3">
+										<label for="montoObjetivo" class="form-label">Monto de Ahorro Objetivo:</label>
+										<div class="input-group">
+											<span class="input-group-text">$</span>
+											<input type="number" id="montoObjetivo" th:field="*{montoObjetivo}" step="0.01" class="form-control" placeholder="0.00" required />
+										</div>
+										<div th:if="${#fields.hasErrors('montoObjetivo')}" th:errors="*{montoObjetivo}" class="text-danger small mt-1"></div>
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label for="mesAnioDisplay" class="form-label">Periodo (MM-AAAA):</label>
+										<input type="text" id="mesAnioDisplay" th:value="${metaAhorro.mesAnio}" class="form-control bg-light border-secondary-subtle text-muted" disabled />
+										<input type="hidden" th:field="*{mesAnio}" />
+										<div th:if="${#fields.hasErrors('mesAnio')}" th:errors="*{mesAnio}" class="text-danger small mt-1"></div>
+									</div>
+									<div class="col-md-3 mb-3 d-flex align-items-end">
+										<button type="submit" class="btn btn-success w-100">Fijar Meta</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+
+					<!-- Contenedor Informativo de Meta y Saldo Actual -->
+					<div class="bg-white text-dark p-3 rounded shadow-sm d-flex justify-content-between align-items-center mb-4">
+						<div>
+							<h5 class="m-0 text-muted" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Meta de Ahorro:</h5>
+							<span class="fw-bold text-primary" style="font-size: 1.5rem;">
+								$ <span th:text="${metaActual != null ? metaActual : (metaAhorro.montoObjetivo != null ? metaAhorro.montoObjetivo : '0.00')}">0.00</span>
+							</span>
+						</div>
+						<div class="text-end">
+							<h5 class="m-0 text-muted" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Saldo Actual:</h5>
+							<span class="fw-bold text-success" style="font-size: 1.5rem;">
+								$ <span th:text="${saldo != null ? #numbers.formatDecimal(saldo, 1, 2) : '0.00'}">0.00</span>
+							</span>
+						</div>
+					</div>
+
+					<!-- Formulario añadir gasto -->
 					<form th:action="@{/gastos/nuevo-form}" th:object="${gasto}" method="POST" class="p-3 mb-4 rounded-3 bg-body-tertiary border text-body d-flex justify-content-between align-items-center shadow-sm">
 						<div class="col-md-3">
 							<label class="form-label small fw-bold">Descripción</label>
-							<input type="text" th:field="*{descripcion}"
-								   th:classappend="${#fields.hasErrors('descripcion')} ? 'is-invalid' : ''"
-								   class="form-control" placeholder="¿En qué gastaste?">
+							<input type="text" th:field="*{descripcion}" th:classappend="${#fields.hasErrors('descripcion')} ? 'is-invalid' : ''" class="form-control" placeholder="¿En qué gastaste?">
 							<div class="invalid-feedback" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
 						</div>
 
@@ -54,9 +100,7 @@
 							<label class="form-label small fw-bold">Monto</label>
 							<div class="input-group has-validation">
 								<span class="input-group-text">$</span>
-								<input type="number" step="0.01" th:field="*{monto}"
-									   th:classappend="${#fields.hasErrors('monto')} ? 'is-invalid' : ''"
-									   class="form-control" placeholder="0.00">
+								<input type="number" step="0.01" th:field="*{monto}" th:classappend="${#fields.hasErrors('monto')} ? 'is-invalid' : ''" class="form-control" placeholder="0.00">
 								<div class="invalid-feedback" th:if="${#fields.hasErrors('monto')}" th:errors="*{monto}"></div>
 							</div>
 						</div>
@@ -84,6 +128,7 @@
 						</div>
 					</form>
 
+					<!-- Tabla de historial -->
 					<div class="table-responsive">
 						<table class="table table-hover align-middle">
 							<thead class="table-dark">
@@ -101,18 +146,14 @@
 								<td th:text="${g.fecha}"></td>
 								<td th:text="${g.descripcion}"></td>
 								<td>
-									<span th:text="${g.tipo}"
-										  th:class="${g.tipo.name() == 'INGRESO' ? 'badge bg-success' : 'badge bg-danger'}">
-									</span>
+									<span th:text="${g.tipo}" th:class="${g.tipo.name() == 'INGRESO' ? 'badge bg-success' : 'badge bg-danger'}"></span>
 								</td>
 								<td th:text="${'$' + #numbers.formatDecimal(g.monto, 1, 2)}"></td>
 								<td>
 									<span class="badge bg-secondary text-uppercase" th:text="${g.categoria}"></span>
 								</td>
 								<td>
-									<button type="button"
-											class="btn btn-outline-danger btn-sm"
-											th:onclick="|confirmarBorrado('${g.id}')|">
+									<button type="button" class="btn btn-outline-danger btn-sm" th:onclick="|confirmarBorrado('${g.id}')|">
 										Borrar
 									</button>
 								</td>
@@ -123,15 +164,14 @@
 
 					<div class="mt-4 p-3 bg-light border text-end">
 						<h4>Saldo Actual:
-							<span th:text="${'$ ' + #numbers.formatDecimal(saldo, 1, 2)}"
-								  th:classappend="${saldo >= 0 ? 'text-success' : 'text-danger'}">
-							</span>
+							<span th:text="${'$ ' + #numbers.formatDecimal(saldo, 1, 2)}" th:classappend="${saldo >= 0 ? 'text-success' : 'text-danger'}"></span>
 						</h4>
 					</div>
 				</div>
 			</div>
 		</div>
 
+		<!-- Panel Lateral: Gráfica -->
 		<div class="col-lg-5">
 			<div class="card shadow mb-4">
 				<div class="p-3 mb-4 rounded-3 bg-body-tertiary border text-body d-flex justify-content-between align-items-center shadow-sm">
@@ -151,60 +191,70 @@
 				</div>
 			</div>
 		</div>
-
 	</div>
 </div>
 
+<!-- Scripts de Librerías -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const htmlElement = document.documentElement;
-    const themeBtn = document.getElementById('btn-theme');
-    const themeIcon = document.getElementById('theme-icon');
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    // 1. Leer si el usuario ya tenía un tema guardado en el navegador
-    const temaGuardado = localStorage.getItem('tema') || 'light';
-    htmlElement.setAttribute('data-bs-theme', temaGuardado);
-    actualizarIcono(temaGuardado);
-
-    // 2. Escuchar el click del botón para alternar el tema
-    themeBtn.addEventListener('click', () => {
-        const temaActual = htmlElement.getAttribute('data-bs-theme');
-        const nuevoTema = (temaActual === 'light') ? 'dark' : 'light';
-        
-        // Aplicar el tema al HTML
-        htmlElement.setAttribute('data-bs-theme', nuevoTema);
-        // Guardarlo en el navegador para la próxima visita
-        localStorage.setItem('tema', nuevoTema);
-        
-        actualizarIcono(nuevoTema);
-    });
-
-    // Función helper para cambiar el icono según el modo
-    function actualizarIcono(tema) {
-        if (tema === 'dark') {
-            themeIcon.className = 'bi bi-sun-fill'; // Cambia a icono de sol si usas Bootstrap Icons
-            // Si usas texto o emojis, aquí puedes cambiar el texto del botón
-        } else {
-            themeIcon.className = 'bi bi-moon-fill'; // Cambia a icono de luna
-        }
-    }
-</script>
+<!-- JAVASCRIPT UNIFICADO INTEGRADO -->
 <script th:inline="javascript">
-	/*<![CDATA[*/
-		document.addEventListener("DOMContentLoaded", function() {
-			const etiquetas = /*[[${descripciones}]]*/ [];
-			const valores = /*[[${montos}]]*/ [];
-			const tipos = /*[[${tipos}]]*/ [];
+	// MÓDULO 0: Ejecución inmediata del tema para evitar parpadeos blancos
+	(function() {
+		const temaGuardado = localStorage.getItem('tema') || 'light';
+		document.documentElement.setAttribute('data-bs-theme', temaGuardado);
+	})();
 
-			console.log("Datos recibidos:", {etiquetas, valores, tipos});
+	document.addEventListener("DOMContentLoaded", function () {
+		
+		// Inyección segura desde Thymeleaf con soporte a valores nulos o vacíos
+		const etiquetas = [[${descripciones}]] || [];
+		const valores = [[${montos}]] || [];
+		const tipos = [[${tipos}]] || [];
+		const errorMensaje = [[${errorMensaje}]] || null;
 
-			const canvas = document.getElementById('miGraficaDeGastos');
-			if (!canvas) return;
+		// ==========================================
+		// MÓDULO 1: Alternador de Tema (Dark / Light)
+		// ==========================================
+		const htmlElement = document.documentElement;
+		const themeBtn = document.getElementById('btn-theme');
+		const themeIcon = document.getElementById('theme-icon');
 
-			const coloresFondo = tipos.map(t => t === 'INGRESO' ? 'rgba(40, 167, 69, 0.7)' : 'rgba(220, 53, 69, 0.7)');
-			const coloresBorde = tipos.map(t => t === 'INGRESO' ? 'rgba(40, 167, 69, 1)' : 'rgba(220, 53, 69, 1)');
+		if (themeBtn && themeIcon) {
+			// Establecer icono inicial correcto
+			if (htmlElement.getAttribute('data-bs-theme') === 'dark') {
+				themeIcon.className = 'bi bi-sun-fill';
+			} else {
+				themeIcon.className = 'bi bi-moon-fill';
+			}
 
+			themeBtn.addEventListener('click', () => {
+				const temaActual = htmlElement.getAttribute('data-bs-theme');
+				const nuevoTema = (temaActual === 'light') ? 'dark' : 'light';
+				
+				htmlElement.setAttribute('data-bs-theme', nuevoTema);
+				localStorage.setItem('tema', nuevoTema);
+				
+				if (nuevoTema === 'dark') {
+					themeIcon.className = 'bi bi-sun-fill';
+				} else {
+					themeIcon.className = 'bi bi-moon-fill';
+				}
+			});
+		}
+
+		// ==========================================
+		// MÓDULO 2: Renderizado Defensivo de Chart.js
+		// ==========================================
+		const canvas = document.getElementById('miGraficaDeGastos');
+		
+		if (canvas && etiquetas.length > 0) {
 			try {
+				// Mapear colores de fondo dinámicamente según el flujo de caja
+				const coloresFondo = tipos.map(t => t === 'INGRESO' ? 'rgba(40, 167, 69, 0.7)' : 'rgba(220, 53, 69, 0.7)');
+				const coloresBorde = tipos.map(t => t === 'INGRESO' ? 'rgba(40, 167, 69, 1)' : 'rgba(220, 53, 69, 1)');
+
 				const ctx = canvas.getContext('2d');
 				new Chart(ctx, {
 					type: 'doughnut',
@@ -212,8 +262,8 @@
 						labels: etiquetas,
 						datasets: [{
 							data: valores,
-							backgroundColor: coloresFondo,
-							borderColor: coloresBorde,
+							backgroundColor: coloresFondo.length ? coloresFondo : ['#6c757d'],
+							borderColor: coloresBorde.length ? coloresBorde : ['#6c757d'],
 							borderWidth: 2,
 							hoverOffset: 15
 						}]
@@ -227,14 +277,27 @@
 					}
 				});
 			} catch (err) {
-				console.error("Error al crear la gráfica:", err);
+				console.error("Error crítico al renderizar la gráfica:", err);
 			}
-		});
-	/*]]>*/
-</script>
+		}
 
-<script>
-	function confirmarBorrado(id) {
+		// ==========================================
+		// MÓDULO 3: Alertas del Sistema (Backend Errors)
+		// ==========================================
+		if (errorMensaje) {
+			Swal.fire({
+				icon: 'error',
+				title: '¡Ups!',
+				text: errorMensaje,
+				confirmButtonColor: '#3085d6'
+			});
+		}
+	});
+
+	// ==========================================
+	// MÓDULO 4: Función Global para Ventana Emergente de Borrado
+	// ==========================================
+	window.confirmarBorrado = function(id) {
 		Swal.fire({
 			title: '¿Eliminar registro?',
 			text: "Esta acción no se puede deshacer",
@@ -248,21 +311,8 @@
 			if (result.isConfirmed) {
 				window.location.href = '/gastos/eliminar/' + id;
 			}
-		})
-	}
-    // Si Thymeleaf detecta que llegó un mensaje de error desde el ExceptionHandler
-/*<![CDATA[*/
-const errorMensaje = /*[[${errorMensaje}]]*/ null;
-if (errorMensaje) {
-    Swal.fire({
-        icon: 'error',
-        title: '¡Ups!',
-        text: errorMensaje,
-        confirmButtonColor: '#3085d6'
-    });
-}
-/*]]>*/
+		});
+	};
 </script>
 </body>
 </html>
-

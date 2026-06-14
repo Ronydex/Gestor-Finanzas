@@ -21,7 +21,10 @@ public class MetaAhorroService {
         this.usuarioRepo = usuarioRepo;
         this.metaAhorroRepo = metaAhorroRepo;
     }
-
+    
+    public Optional<MetaAhorro> buscarMetaPorMes(String email, String mesAnio){
+        return metaAhorroRepo.findByUsuarioEmailAndMesAnio(email, mesAnio);
+    }
     public void guardarOActualizarMeta(MetaAhorroRequestDTO metAhorroDTO, String email){
         Usuario usuario = usuarioRepo.findByEmail(email)
         .orElseThrow(() -> new  UsernameNotFoundException("Usuario No Encontrado" + email));
